@@ -164,7 +164,7 @@ void Hardware::enableHardware() {
 }
 
 void Hardware::updateTurnOffTime() {
-    m_deepSleepTime = 5 * 60 * 1000L + millis();
+    m_deepSleepTime = 5 * 60 * MS_IN_SEC + millis();
 }
 
 void Hardware::effectiveMode(bool effective) {

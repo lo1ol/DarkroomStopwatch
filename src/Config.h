@@ -9,3 +9,7 @@
 #define ENCODER_PWR A0
 #define DISPLAY_PWR A1
 #define BEEPER 9
+
+// you timer could be behind or hurry
+// you can adjust it using this param
+#define MS_IN_SEC 995L

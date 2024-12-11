@@ -27,8 +27,8 @@ void changeMode(Mode mode) {
     case Mode::set:
         gHardware.effectiveMode(true);
         if (gPrevPassedTime) {
-            gRunningMin = (gPrevPassedTime / 1000) / 60;
-            gRunningSec = (gPrevPassedTime / 1000) % 60;
+            gRunningMin = (gPrevPassedTime / MS_IN_SEC) / 60;
+            gRunningSec = (gPrevPassedTime / MS_IN_SEC) % 60;
         }
         gPrevPassedTime = 0;
 
@@ -40,7 +40,7 @@ void changeMode(Mode mode) {
     case Mode::runTime:
         gHardware.effectiveMode(false);
         gBeeper.play(Beeper::Beep);
-        gStopTime = millis() + (gRunningMin * 60L + gRunningSec) * 1000L;
+        gStopTime = millis() + (gRunningMin * 60L + gRunningSec) * MS_IN_SEC;
         gStartTime = millis();
         gDisplay.resetBlink();
         break;
@@ -119,15 +119,15 @@ void loop() {
             break;
         }
 
-        gDisplay.showTime((gStopTime - curTime) / 1000);
+        gDisplay.showTime((gStopTime - curTime) / MS_IN_SEC);
         break;
     case Mode::stopwatch:
-        if ((curTime - gStartTime) / 1000 > 3600) {
+        if ((curTime - gStartTime) / MS_IN_SEC > 3600) {
             changeMode(Mode::set);
             gBeeper.play(Beeper::Alarm);
             break;
         }
-        gDisplay.showTime((curTime - gStartTime) / 1000);
+        gDisplay.showTime((curTime - gStartTime) / MS_IN_SEC);
 
         if (gHardware.startClick()) {
             changeMode(Mode::stopwatchPause);
@@ -136,7 +136,7 @@ void loop() {
 
         break;
     case Mode::stopwatchPause:
-        gDisplay.showTime(gPrevPassedTime / 1000);
+        gDisplay.showTime(gPrevPassedTime / MS_IN_SEC);
 
         if (gHardware.startClick()) {
             changeMode(Mode::stopwatch);
