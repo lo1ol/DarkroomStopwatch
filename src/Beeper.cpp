@@ -5,14 +5,12 @@
 #include "Tools.h"
 
 constexpr int kVol = 255;
-constexpr uint16_t kAlarmMelody[] = { 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50 };
 
 Beeper::Beeper() {
     pinMode(BEEPER, OUTPUT);
 }
 
 void Beeper::shutUp() {
-    m_play = false;
     m_play = false;
     analogWrite(BEEPER, 0);
 }
@@ -21,7 +19,7 @@ void Beeper::play(Style style) {
     m_play = true;
     m_style = style;
     m_melodyPhase = 0;
-    m_timer = millis() + (style == Beep ? 50 : kAlarmMelody[0]);
+    m_timer = millis() + (style == LongAlarm ? 500 : 50 );
     analogWrite(BEEPER, kVol);
 }
 
@@ -38,15 +36,23 @@ void Beeper::tick() {
         }
         break;
     case Alarm:
+    case LongAlarm:
         if (m_timer > currentTime)
             break;
         ++m_melodyPhase;
         analogWrite(BEEPER, m_melodyPhase & 1 ? 0 : kVol);
 
-        if (m_melodyPhase == sizeof(kAlarmMelody) / sizeof(kAlarmMelody[0]))
-            shutUp();
-        else
-            m_timer = currentTime + kAlarmMelody[m_melodyPhase];
+        if (m_style == Alarm) {
+            if (m_melodyPhase == 20)
+                shutUp();
+            else
+                m_timer = currentTime + 50;
+        } else {
+            if (m_melodyPhase == 60)
+                shutUp();
+            else
+                m_timer = currentTime + 500;
+        }
         break;
     }
 }

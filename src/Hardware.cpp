@@ -39,6 +39,11 @@ void Hardware::tick() {
     if (m_resetBtn.pressing() || m_startBtn.pressing() || gEncoder.turn()) {
         updateTurnOffTime();
 
+        if (gBeeper.isPlay() && gBeeper.style() == Beeper::LongAlarm) {
+            gBeeper.shutUp();
+            m_ignoreBtns = true;
+        }
+
         if (m_disabled) {
             wakeUp();
             return;
@@ -46,7 +51,7 @@ void Hardware::tick() {
     }
 
     // if nothing is pressed and we still ignore btns
-    if (m_ignoreBtns && millis() - m_wakeUpTime > 100 && !m_resetBtn.busy() && !m_startBtn.busy()) {
+    if (m_ignoreBtns && millis() - m_lastReponseTime > 100 && !m_resetBtn.busy() && !m_startBtn.busy()) {
         // stop ignore them
         m_ignoreBtns = false;
     }
@@ -70,7 +75,7 @@ void Hardware::tick() {
         return;
     }
 
-    if (m_allowSleep && millis() > m_deepSleepTime) {
+    if (m_allowSleep && millis() > m_lastReponseTime) {
         sleep();
     }
 }
@@ -89,8 +94,6 @@ void Hardware::wakeUp() {
         power.wakeUp();
 
     gHardware.updateTurnOffTime();
-
-    gHardware.m_wakeUpTime = millis();
 }
 
 void Hardware::sleep() {
@@ -101,7 +104,7 @@ void Hardware::sleep() {
 }
 
 int8_t Hardware::getEncoderDir() {
-    if (!gEncoder.turn() || millis() - m_wakeUpTime < 100)
+    if (!gEncoder.turn() || (m_ignoreBtns && millis() - m_lastReponseTime < 100))
         return 0;
 
     return gEncoder.dir();
@@ -164,7 +167,7 @@ void Hardware::enableHardware() {
 }
 
 void Hardware::updateTurnOffTime() {
-    m_deepSleepTime = 5 * 60 * MS_IN_SEC + millis();
+    m_lastReponseTime = 5 * 60 * MS_IN_SEC + millis();
 }
 
 void Hardware::effectiveMode(bool effective) {

@@ -36,8 +36,7 @@ private:
     int8_t getEncoderDir();
     void updateTurnOffTime();
 
-    uint32_t m_deepSleepTime = 0;
-    uint32_t m_wakeUpTime = 0;
+    uint32_t m_lastReponseTime = 0;
     bool m_allowSleep = false;
     bool m_disabled = false;
     bool m_prepareForSleep = false;
