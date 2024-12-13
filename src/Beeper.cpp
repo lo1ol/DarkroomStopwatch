@@ -8,6 +8,7 @@ constexpr int kVol = 255;
 
 Beeper::Beeper() {
     pinMode(BEEPER, OUTPUT);
+    analogWrite(BEEPER, 0);
 }
 
 void Beeper::shutUp() {

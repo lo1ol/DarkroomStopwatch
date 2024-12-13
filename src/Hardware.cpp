@@ -18,10 +18,13 @@ void processISR() {
 
 } // namespace
 
-Hardware::Hardware() {
+void Hardware::init() {
     gEncoder.setEncISR(true);
 
     power.setSleepMode(POWERDOWN_SLEEP);
+    power.autoCalibrate();
+    power.setSleepResolution(SLEEP_8192MS);
+
     pinMode(ENCODER_PWR, OUTPUT);
     digitalWrite(ENCODER_PWR, HIGH);
     pinMode(DISPLAY_PWR, OUTPUT);
@@ -35,6 +38,7 @@ void Hardware::tick() {
     gEncoder.tick();
     m_startBtn.tick();
     m_resetBtn.tick();
+    m_settingBtn.tick(m_startBtn, m_resetBtn);
 
     m_justWakedUp = false;
 
@@ -101,7 +105,11 @@ void Hardware::wakeUp() {
 void Hardware::sleep() {
     m_disabled = true;
     disableHardware();
-    power.sleep(SLEEP_FOREVER);
+    power.sleepDelay(60 * 60 * 1000L);
+    if (m_disabled) {
+        gSettings = gDefaultSettings;
+        power.sleep(SLEEP_FOREVER);
+    }
     enableHardware();
     m_justWakedUp = true;
 }
@@ -113,22 +121,37 @@ int8_t Hardware::getEncoderDir() {
     return gEncoder.dir();
 }
 
-bool Hardware::getInt(uint8_t& val_, uint8_t min, uint8_t max) {
-    int8_t val = val_;
+bool Hardware::getInt(uint8_t& val_, uint8_t min, uint8_t max, bool bound) {
+    int16_t val = val_;
     int8_t shift{ getEncoderDir() };
-    if (gEncoder.fast())
+    if (gEncoder.fast() && max - min > 20)
         shift *= 5;
 
     val += shift;
 
-    if (val < 0)
-        val += max - min;
+    if (bound) {
+        if (val < min)
+            val = min;
+        if (val >= max)
+            val = max - 1;
+    } else {
+        if (val < min)
+            val += max - min;
 
-    if (val >= max || val < min)
-        val = min + (val % (max - min));
+        if (val >= max || val < min)
+            val = min + ((val - min) % (max - min));
+    }
 
     val_ = val;
     return shift;
+}
+
+bool Hardware::getBool(bool& val_) {
+    uint8_t val = val_;
+    auto res = getInt(val, 0, 2, true);
+
+    val_ = val;
+    return res;
 }
 
 bool Hardware::startClick() {
@@ -141,6 +164,10 @@ bool Hardware::resetClick() {
 
 bool Hardware::resetHold() {
     return !m_ignoreBtns && m_resetBtn.hold();
+}
+
+bool Hardware::settingHold() {
+    return !m_ignoreBtns && m_settingBtn.hold();
 }
 
 void Hardware::disableHardware() {

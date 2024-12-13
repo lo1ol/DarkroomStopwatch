@@ -1,7 +1,5 @@
 #include "Tools.h"
 
-#include <GyverPower.h>
-
 namespace {
 
 enum class Mode {
@@ -9,6 +7,7 @@ enum class Mode {
     runTime,
     stopwatch,
     stopwatchPause,
+    settings,
 };
 
 Mode gMode = Mode::set;
@@ -19,6 +18,8 @@ uint8_t gRunningSec = 0;
 uint32_t gStartTime = 0;
 uint32_t gStopTime = 0;
 uint32_t gPrevPassedTime = 0;
+
+SettingId gCurrentSetting;
 
 uint16_t gNextNotifyTime;
 bool gLongAlarm;
@@ -44,9 +45,18 @@ void changeMode(Mode mode) {
         gHardware.effectiveMode(false);
         gBeeper.play(Beeper::Beep);
         gStopTime = millis() + (gRunningMin * 60L + gRunningSec) * MS_IN_SEC;
-        gNextNotifyTime = (gRunningMin > 0 && gRunningMin < 6) ? 10 : -1;
-        gLongAlarm = gRunningMin >= 20;
-        gStartTime = millis();
+        gLongAlarm = gRunningMin >= 20 || gSettings.longNotify;
+        if (gRunningMin > 0 && gRunningMin < 20) {
+            if (gSettings.eachMinuteNotify) {
+                gNextNotifyTime = gRunningMin * 60;
+                if (gRunningSec < 10)
+                    gNextNotifyTime -= 60;
+            }
+
+            if (gNextNotifyTime == 0)
+                gNextNotifyTime = gSettings.preNotifyTime;
+        }
+
         gDisplay.resetBlink();
         break;
     case Mode::stopwatch:
@@ -62,6 +72,11 @@ void changeMode(Mode mode) {
         gBeeper.play(Beeper::Beep);
         gDisplay.blinkDots(false);
         break;
+    case Mode::settings:
+        gHardware.effectiveMode(true);
+        gCurrentSetting = SettingId::PreNotifyTime;
+        gDisplay.showSetting(gCurrentSetting, gSettings.preNotifyTime);
+        break;
     }
 
     gMode = mode;
@@ -70,6 +85,7 @@ void changeMode(Mode mode) {
 } // namespace
 
 void setup() {
+    gHardware.init();
     changeMode(Mode::set);
 }
 
@@ -86,7 +102,7 @@ void loop() {
     auto curTime = millis();
     auto runningTime = gRunningMin * 60L + gRunningSec;
 
-    if (gHardware.resetHold()) {
+    if (gMode != Mode::settings && gHardware.resetHold()) {
         if (gMode == Mode::set || gMode == Mode::stopwatchPause) {
             gPrevPassedTime = 0;
             gRunningMin = 0;
@@ -99,6 +115,11 @@ void loop() {
 
     switch (gMode) {
     case Mode::set:
+        if (gHardware.settingHold()) {
+            changeMode(Mode::settings);
+            break;
+        }
+
         if (gSetMin && gHardware.getInt(gRunningMin))
             gDisplay.blinkMin(true);
 
@@ -131,9 +152,12 @@ void loop() {
 
         auto restTime = (gStopTime - curTime) / MS_IN_SEC + 1;
         if (gNextNotifyTime == restTime) {
-            gBeeper.play(Beeper::ShortAlarm);
-            if (gNextNotifyTime == 10)
-                gNextNotifyTime = 0;
+            gBeeper.play(restTime == gSettings.preNotifyTime ? Beeper::Beep : Beeper::ShortAlarm);
+
+            if (gNextNotifyTime == 60)
+                gNextNotifyTime = gSettings.preNotifyTime;
+            else
+                gNextNotifyTime -= 60;
         }
 
         gDisplay.showTime(restTime);
@@ -167,6 +191,47 @@ void loop() {
             (!gSetMin && gHardware.getInt(gRunningSec))) {
             changeMode(Mode::set);
             break;
+        }
+
+        break;
+
+    case Mode::settings:
+        if (gHardware.settingHold()) {
+            changeMode(Mode::set);
+            break;
+        }
+
+        if (gHardware.resetHold())
+            gSettings = gDefaultSettings;
+
+        if (gHardware.startClick())
+            gCurrentSetting = ADD_TO_ENUM(SettingId, gCurrentSetting, 1);
+
+        if (gCurrentSetting == SettingId::PreNotifyTime) {
+            gHardware.getInt(gSettings.preNotifyTime, 0, 21, true);
+
+            if (gHardware.resetClick())
+                gSettings.preNotifyTime = gDefaultSettings.preNotifyTime;
+
+            gDisplay.showSetting(gCurrentSetting, gSettings.preNotifyTime);
+        }
+
+        if (gCurrentSetting == SettingId::LongNotify) {
+            gHardware.getBool(gSettings.longNotify);
+
+            if (gHardware.resetClick())
+                gSettings.longNotify = gDefaultSettings.longNotify;
+
+            gDisplay.showSetting(gCurrentSetting, gSettings.longNotify);
+        }
+
+        if (gCurrentSetting == SettingId::EachMinuteNotify) {
+            gHardware.getBool(gSettings.eachMinuteNotify);
+
+            if (gHardware.resetClick())
+                gSettings.eachMinuteNotify = gDefaultSettings.eachMinuteNotify;
+
+            gDisplay.showSetting(gCurrentSetting, gSettings.eachMinuteNotify);
         }
 
         break;

@@ -3,3 +3,4 @@
 Display gDisplay;
 Hardware gHardware;
 Beeper gBeeper;
+Settings gSettings;

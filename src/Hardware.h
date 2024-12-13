@@ -14,14 +14,18 @@
 
 class Hardware {
 public:
-    Hardware();
+    Hardware() = default;
+    void init();
+
     void tick();
 
-    bool getInt(uint8_t& val, uint8_t min = 0, uint8_t max = 60);
+    bool getInt(uint8_t& val, uint8_t min = 0, uint8_t max = 60, bool bound = false);
+    bool getBool(bool& val);
 
     bool startClick();
     bool resetClick();
     bool resetHold();
+    bool settingHold();
 
     void effectiveMode(bool);
 
@@ -43,8 +47,10 @@ private:
     bool m_disabled = false;
     bool m_prepareForSleep = false;
     bool m_ignoreBtns = false;
+    bool m_needOpenSetting = false;
     bool m_justWakedUp = true;
 
     ButtonT<RESET_BTN> m_resetBtn;
     ButtonT<START_BTN> m_startBtn;
+    VirtButton m_settingBtn;
 };
