@@ -126,7 +126,7 @@ void loop() {
 
         auto restTime = (gStopTime - curTime) / MS_IN_SEC + 1;
         if (gNextNotifyTime == restTime) {
-            gBeeper.play(Beeper::Beep);
+            gBeeper.play(Beeper::ShortAlarm);
             if (gNextNotifyTime == 10)
                 gNextNotifyTime = 0;
         }

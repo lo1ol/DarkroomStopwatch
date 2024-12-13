@@ -6,6 +6,7 @@ class Beeper {
 public:
     enum Style {
         Beep,
+        ShortAlarm,
         Alarm,
         LongAlarm,
     };

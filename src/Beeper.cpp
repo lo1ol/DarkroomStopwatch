@@ -19,7 +19,7 @@ void Beeper::play(Style style) {
     m_play = true;
     m_style = style;
     m_melodyPhase = 0;
-    m_timer = millis() + (style == LongAlarm ? 500 : 50 );
+    m_timer = millis() + (style == LongAlarm ? 500 : 50);
     analogWrite(BEEPER, kVol);
 }
 
@@ -36,6 +36,7 @@ void Beeper::tick() {
         }
         break;
     case Alarm:
+    case ShortAlarm:
     case LongAlarm:
         if (m_timer > currentTime)
             break;
@@ -47,7 +48,16 @@ void Beeper::tick() {
                 shutUp();
             else
                 m_timer = currentTime + 50;
-        } else {
+        }
+
+        if (m_style == ShortAlarm) {
+            if (m_melodyPhase == 6)
+                shutUp();
+            else
+                m_timer = currentTime + 50;
+        }
+
+        if (m_style == LongAlarm) {
             if (m_melodyPhase == 60)
                 shutUp();
             else
