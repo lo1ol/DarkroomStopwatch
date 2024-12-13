@@ -25,11 +25,13 @@ public:
 
     void effectiveMode(bool);
 
-    static void wakeUp();
+    bool justWakedUp() const { return m_justWakedUp; }
 
 private:
     void enableHardware();
     void disableHardware();
+
+    static void wakeUp();
 
     void sleep();
 
@@ -41,6 +43,7 @@ private:
     bool m_disabled = false;
     bool m_prepareForSleep = false;
     bool m_ignoreBtns = false;
+    bool m_justWakedUp = true;
 
     ButtonT<RESET_BTN> m_resetBtn;
     ButtonT<START_BTN> m_startBtn;

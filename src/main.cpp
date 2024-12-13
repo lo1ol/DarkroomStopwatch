@@ -78,6 +78,11 @@ void loop() {
     gHardware.tick();
     gBeeper.tick();
 
+    if (gHardware.justWakedUp()) {
+        changeMode(Mode::set);
+        return;
+    }
+
     auto curTime = millis();
     auto runningTime = gRunningMin * 60L + gRunningSec;
 

@@ -36,6 +36,8 @@ void Hardware::tick() {
     m_startBtn.tick();
     m_resetBtn.tick();
 
+    m_justWakedUp = false;
+
     if (m_resetBtn.pressing() || m_startBtn.pressing() || gEncoder.turn()) {
         updateTurnOffTime();
 
@@ -101,6 +103,7 @@ void Hardware::sleep() {
     disableHardware();
     power.sleep(SLEEP_FOREVER);
     enableHardware();
+    m_justWakedUp = true;
 }
 
 int8_t Hardware::getEncoderDir() {
@@ -141,8 +144,8 @@ bool Hardware::resetHold() {
 }
 
 void Hardware::disableHardware() {
-    digitalWrite(DISPLAY_PWR, LOW);
     gDisplay.power(false);
+    digitalWrite(DISPLAY_PWR, LOW);
 
     attachPinChangeInterrupt(digitalPinToPinChangeInterrupt(ENCODER_DT), Hardware::wakeUp, CHANGE);
     attachPinChangeInterrupt(digitalPinToPinChangeInterrupt(START_BTN), Hardware::wakeUp, FALLING);
