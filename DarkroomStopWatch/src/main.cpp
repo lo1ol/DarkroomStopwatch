@@ -94,6 +94,14 @@ void loop() {
     gBeeper.tick();
 
     if (gHardware.justWakedUp()) {
+        if (gHardware.justWakedUpAfterDeepSleep()) {
+            gRunningMin = 0;
+            gRunningSec = 0;
+            gPrevPassedTime = 0;
+            gSettings = gDefaultSettings;
+            gSetMin = true;
+        }
+
         changeMode(Mode::set);
         return;
     }

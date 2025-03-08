@@ -30,6 +30,7 @@ public:
     void effectiveMode(bool);
 
     bool justWakedUp() const { return m_justWakedUp; }
+    bool justWakedUpAfterDeepSleep() const { return m_justWakedUpAfterDeepSleep; }
 
 private:
     void enableHardware();
@@ -49,6 +50,7 @@ private:
     bool m_ignoreBtns = false;
     bool m_needOpenSetting = false;
     bool m_justWakedUp = true;
+    bool m_justWakedUpAfterDeepSleep = true;
 
     ButtonT<RESET_BTN> m_resetBtn;
     ButtonT<START_BTN> m_startBtn;

@@ -41,6 +41,7 @@ void Hardware::tick() {
     m_settingBtn.tick(m_startBtn, m_resetBtn);
 
     m_justWakedUp = false;
+    m_justWakedUpAfterDeepSleep = false;
 
     if (m_resetBtn.pressing() || m_startBtn.pressing() || gEncoder.turn()) {
         updateTurnOffTime();
@@ -107,7 +108,6 @@ void Hardware::sleep() {
     disableHardware();
     power.sleepDelay(60 * 60 * 1000L);
     if (m_disabled) {
-        gSettings = gDefaultSettings;
         power.sleep(SLEEP_FOREVER);
     }
     enableHardware();
