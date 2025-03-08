@@ -1,62 +1,80 @@
-# Простой таймер/секундомер для даркрума
+# Simple darkroom timer/stopwatch
 
-## Основные принципы
+> [Инструкция на русском](./README_RU.md)
 
-1. Энергоэффективность: если таймер не трогать, то он переходит в режим сна. В режиме сна таймер совсем не потребляет энергии (0.3 мA). И может пролежать так год. При этом в обычном режиме таймер потребляет мало энергии (в среднем около 2.5 мА)
-2. Подсветка дисплея: используется LED дисплей в минимальной режиме яркости. Этого должно быть более чем достаточно для удобного просмотра времени при красном свете
-3. Простота: есть 2 кнопки и энкодер (одна кнопка на энкодере). Они интуитивно понятны -- обычная кнопка старта/паузы, кнопка на энкодере -- переход. Удержание кнопки на энкодере -- сброс. Удержание кнопки старта -- выключение дисплея
-4. Быстрота установки времени: минуты и секунды выстанавливаются отдельно и в любом направлении с помощью энкодера. Это позволяет выставить любое время за несколько секунд
-5. Возможность выставить предварительное напоминание: чтобы вы приготовились вытаскивать лист из кюветы -- есть предварительный пик (по умолчанию 0 секунд -- выкл)
-6. Долгое напоминание при установке таймера на долгое время: таймер: при установке таймера более чем на 20 минут -- таймер будет пищать 30 секунд. Есть возможность зафорсировать это поведение
-7. Есть возможность поставить напоминания на каждую минуту работы таймера (удобно при проявке пленки, для напоминания об агитации)
-8. Есть режим настроек, который сбрасывается после часа простоя
+> 3D model part: https://www.thingiverse.com/thing:6973109
 
-## Режимы
+> Demo: https://youtube.com/shorts/RGO38ZYOplA?feature=share
 
-Eсть 4 режима: режим установки времени, режим запущенного таймера, режим запущенного секундомера, режим остановленного секундомера, режим настроек
+## Main ideas
 
-* Во всех режимах удержание кнопки старта приводит к отключение дисплея. В режиме остановки секундомера и установки времени и установки настроек устройство уходит в сон. Включить дисплей и выйти из сна можно по нажатию любой кнопки или вращению энкодера
+1. Energy efficiency: if don't touch timer for some time -- it goes to sleep mode. In this mode it consumes 0.3mA. In mnormal mode it consumes 2.5mA. In averege usage it lasts for 4-6 monthes
+2. Display has backlight.
+3. Simple: device has two big buttons and encoder.
 
-### Режим установки времени
+Extra features:
+1. You can set pre notification time. You can use it to prepare to finish of the process
+2. Long notification for long times. For times long 20 minutes it sets automatically.
+3. Each minute notification. Sets automaticelly for 4-20 minutes. Usefull to notify about aggitation.
 
-Можно распознать по тому, что в нем мигает время
+## How to opperate
 
-* Крутилка на энкодере меняет время
-* Нажатие на энкодер переключает смену между минутами и секундами
-* Удержание энкодера сбрасывает установку в 0
-* Нажатие на кнопку старт при 0 запускает секундомер, не на 0 -- таймер
-* Удержание энкодера и кнопки старта переходит в режим настроек
+* Click main button to start timer. If time is 0 -- it starts stopwatch
+* Click main button to pause stopwatch
+* Rotate encoder to change time
+* Hold encoder to reset time
+* Hold main button to turn off display
+* Hold encoder and main button to go to settings
 
-### Режим запущенного таймера
+### Settings Mode
 
-Можно распознать по тому, что в нем время идет назад
+Name of settings located at the left side of screen
+* `PN`: Pre notify
+* `LN`: Long notify
+* `EN`: Every minute notify
 
-* Удержание энкодера сбрасывает таймер в значение с которого он был запущен
-* Остальные нажатия игнорируются
+## Hardware
 
+1. [LED TM1637](https://sl.aliexpress.ru/p?key=JlZ4GYP)
+2. [Encoder EC11](https://sl.aliexpress.ru/p?key=XLZ4G8M) --  saw off the top you to shorten it
+3. [Tactile button](https://sl.aliexpress.ru/p?key=JxO4Gkf)
+4. [Buzzer](https://sl.aliexpress.ru/p?key=tHIeGkI)
+5. [Battery](https://sl.aliexpress.ru/p?key=B1G4GWz)
+6. [Charger module](https://sl.aliexpress.ru/p?key=XfG4GBb)
+7. [Arduino pro mini 3.3V](https://sl.aliexpress.ru/p?key=6zG4GHJ). You need to broke central LED on it to decrease power consumption:)
 
-### Режим запущенного секундомера
+### Scheme
+![Circuit](./Circuit.jpg)
 
-Можно распознать по тому, что в нем время идет вперед.
-    
-* Нажатие на старт стопает секундомер
-* Удержание энкодера сбрасывает таймер в 0
-* Работает максимум 1 час
+### 3D Body
 
-### Режим остановленного секундомера
+https://www.thingiverse.com/thing:6973109
 
-Можно распознать по тому, что в нем мигает двоеточие
+## Build and upload code to Arduino
 
-* Крутилка на энкодере и нажатие на энкодере переключает нас в режим установки времени (с того времени на котором мы остановились)
-* Нажатие на старт продолжает работу секундомера
-* Удержание энкодера сбрасывает таймер в 0
+If you want just upload code to your arduino without modification, then the simpliest way to do it is using of Arduino IDE
+1. Install Arduino IDE
+2. Clone this git project to any folder
+3. Open ino file from Arduino IDE (`File`->`Open...`->`path to .ino` file)
+4. Install dep libreries (`Tools` -> `Manage Libraries...`):
+   * EncButton
+   * GyverSegment
+   * GyverPower
+   * PinChangeInterrupt
+5. Choose your board -- Arduino Micro and processor -- ATmega328P (3.3V MHz)
+6. `Sketch` -> `Upload Using Programmer`
 
-### Режим настроек
+If you want to modify this code, then I recomment to use PlatfromIO:
 
-Можно распознать по тому, что в левой части экрана показываются не цифры: `PN`: Set pre notify time, `LN`: Force long notify, `EN`: Every minute notify
+```bash
+# upload to device
+pio run -t upload
+```
 
-* Крутилка на энкодере меняет значение.
-* Клик на энкодере сбрасывает значение в дефолтное
-* Удержание на энкодере сбрасывает все значения на дефолтные
-* Нажатие на старт переключает на установку следующей настройки
-* Удержания кнопки старта и энкодера возвращает нас в режим установки времени
+## Support
+
+If you have any questions, problems or suggestions, you are welcome to write me:)
+
+Petr:<br>
+tg: [@lo1ol](http://t.me/lo1ol)<br>
+email: [myprettycapybara@gmail.com](mailto:myprettycapybara@gmail.com?subject=Darkroom%20timer)
