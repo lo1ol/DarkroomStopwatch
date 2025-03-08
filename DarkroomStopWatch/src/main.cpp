@@ -46,16 +46,15 @@ void changeMode(Mode mode) {
         gBeeper.play(Beeper::Beep);
         gStopTime = millis() + (gRunningMin * 60L + gRunningSec) * MS_IN_SEC;
         gLongAlarm = gRunningMin >= 20 || gSettings.longNotify;
-        if (gRunningMin > 0 && gRunningMin < 20) {
-            if (gSettings.eachMinuteNotify) {
-                gNextNotifyTime = gRunningMin * 60;
-                if (gRunningSec < 10)
-                    gNextNotifyTime -= 60;
-            }
-
-            if (gNextNotifyTime == 0)
-                gNextNotifyTime = gSettings.preNotifyTime;
+        gNextNotifyTime = 0;
+        if (gRunningMin > 3 && gRunningMin < 20 && gSettings.eachMinuteNotify) {
+            gNextNotifyTime = gRunningMin * 60;
+            if (gRunningSec < 10)
+                gNextNotifyTime -= 60;
         }
+
+        if (gRunningMin > 0 && gRunningMin < 5 && gNextNotifyTime == 0)
+            gNextNotifyTime = gSettings.preNotifyTime;
 
         gDisplay.resetBlink();
         break;

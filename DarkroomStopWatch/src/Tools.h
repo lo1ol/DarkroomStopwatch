@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Config.h>
+#include "Config.h"
 
 #include "Beeper.h"
 #include "Display.h"

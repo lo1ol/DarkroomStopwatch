@@ -4,8 +4,6 @@
 
 #include "Tools.h"
 
-constexpr int kVol = 255;
-
 Beeper::Beeper() {
     pinMode(BEEPER, OUTPUT);
     analogWrite(BEEPER, 0);
@@ -21,7 +19,7 @@ void Beeper::play(Style style) {
     m_style = style;
     m_melodyPhase = 0;
     m_timer = millis() + (style == LongAlarm ? 500 : 50);
-    analogWrite(BEEPER, kVol);
+    analogWrite(BEEPER, BUZZER_VOLUME);
 }
 
 void Beeper::tick() {
@@ -42,7 +40,7 @@ void Beeper::tick() {
         if (m_timer > currentTime)
             break;
         ++m_melodyPhase;
-        analogWrite(BEEPER, m_melodyPhase & 1 ? 0 : kVol);
+        analogWrite(BEEPER, m_melodyPhase & 1 ? 0 : BUZZER_VOLUME);
 
         if (m_style == Alarm) {
             if (m_melodyPhase == 20)

@@ -2,14 +2,14 @@
 
 #include <Arduino.h>
 
-constexpr uint16_t kBlinkTime = 500;
+constexpr uint16_t kBlinkTime = MS_IN_SEC / 2;
 
 constexpr uint8_t kSegCharMap[] = {
     0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F,
 };
 
 Display::Display() : m_display(DISPLAY_DIO, DISPLAY_CLK, true) {
-    m_display.brightness(0);
+    m_display.brightness(DISPLAY_BRIGHTNESS);
 }
 
 void Display::showTime(uint16_t time) {
