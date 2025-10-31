@@ -52,7 +52,7 @@ private:
     bool m_justWakedUp = true;
     bool m_justWakedUpAfterDeepSleep = true;
 
-    ButtonT<RESET_BTN> m_resetBtn;
-    ButtonT<START_BTN> m_startBtn;
+    ButtonT<RESET_BTN_PIN> m_resetBtn;
+    ButtonT<START_BTN_PIN> m_startBtn;
     VirtButton m_settingBtn;
 };

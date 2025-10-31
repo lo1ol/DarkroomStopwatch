@@ -5,13 +5,13 @@
 #include "Tools.h"
 
 Beeper::Beeper() {
-    pinMode(BEEPER, OUTPUT);
-    analogWrite(BEEPER, 0);
+    pinMode(BEEPER_PIN, OUTPUT);
+    analogWrite(BEEPER_PIN, 0);
 }
 
 void Beeper::shutUp() {
     m_play = false;
-    analogWrite(BEEPER, 0);
+    analogWrite(BEEPER_PIN, 0);
 }
 
 void Beeper::play(Style style) {
@@ -19,7 +19,7 @@ void Beeper::play(Style style) {
     m_style = style;
     m_melodyPhase = 0;
     m_timer = gMillis() + (style == LongAlarm ? 500 : 50);
-    analogWrite(BEEPER, BUZZER_VOLUME);
+    analogWrite(BEEPER_PIN, BUZZER_VOLUME);
 }
 
 void Beeper::tick() {
@@ -40,7 +40,7 @@ void Beeper::tick() {
         if (m_timer > currentTime)
             break;
         ++m_melodyPhase;
-        analogWrite(BEEPER, m_melodyPhase & 1 ? 0 : BUZZER_VOLUME);
+        analogWrite(BEEPER_PIN, m_melodyPhase & 1 ? 0 : BUZZER_VOLUME);
 
         if (m_style == Alarm) {
             if (m_melodyPhase == 20)

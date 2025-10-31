@@ -10,7 +10,7 @@
 
 namespace {
 
-EncButton gEncoder{ ENCODER_DT, ENCODER_CLK };
+EncButton gEncoder{ ENCODER_DT_PIN, ENCODER_CLK_PIN };
 
 void processISR() {
     gEncoder.tickISR();
@@ -25,9 +25,9 @@ void Hardware::init() {
     power.autoCalibrate();
     power.setSleepResolution(SLEEP_8192MS);
 
-    pinMode(ENCODER_PWR, OUTPUT);
-    digitalWrite(ENCODER_PWR, HIGH);
-    pinMode(DISPLAY_PWR, OUTPUT);
+    pinMode(ENCODER_PWR_PIN, OUTPUT);
+    digitalWrite(ENCODER_PWR_PIN, HIGH);
+    pinMode(DISPLAY_PWR_PIN, OUTPUT);
     enableHardware();
 
     attachInterrupt(0, processISR, CHANGE);
@@ -68,7 +68,7 @@ void Hardware::tick() {
 
     if (m_startBtn.hold()) {
         gDisplay.power(false);
-        digitalWrite(DISPLAY_PWR, LOW);
+        digitalWrite(DISPLAY_PWR_PIN, LOW);
         m_prepareForSleep = true;
         return;
     }
@@ -91,7 +91,7 @@ void Hardware::wakeUp() {
     if (!gHardware.m_disabled)
         return;
 
-    digitalWrite(DISPLAY_PWR, HIGH);
+    digitalWrite(DISPLAY_PWR_PIN, HIGH);
     gDisplay.power(true);
 
     gHardware.m_disabled = false;
@@ -172,26 +172,26 @@ bool Hardware::settingHold() {
 
 void Hardware::disableHardware() {
     gDisplay.power(false);
-    digitalWrite(DISPLAY_PWR, LOW);
+    digitalWrite(DISPLAY_PWR_PIN, LOW);
 
-    attachPinChangeInterrupt(digitalPinToPinChangeInterrupt(ENCODER_DT), Hardware::wakeUp, CHANGE);
-    attachPinChangeInterrupt(digitalPinToPinChangeInterrupt(START_BTN), Hardware::wakeUp, FALLING);
-    attachPinChangeInterrupt(digitalPinToPinChangeInterrupt(RESET_BTN), Hardware::wakeUp, FALLING);
+    attachPinChangeInterrupt(digitalPinToPinChangeInterrupt(ENCODER_DT_PIN), Hardware::wakeUp, CHANGE);
+    attachPinChangeInterrupt(digitalPinToPinChangeInterrupt(START_BTN_PIN), Hardware::wakeUp, FALLING);
+    attachPinChangeInterrupt(digitalPinToPinChangeInterrupt(RESET_BTN_PIN), Hardware::wakeUp, FALLING);
 
     power.hardwareDisable(PWR_ALL);
 }
 
 void Hardware::enableHardware() {
-    digitalWrite(DISPLAY_PWR, HIGH);
+    digitalWrite(DISPLAY_PWR_PIN, HIGH);
     gDisplay.power(true);
 
     power.hardwareEnable(PWR_ALL);
     power.hardwareDisable(PWR_I2C | PWR_SPI | PWR_USB | PWR_ADC | PWR_TIMER1 | PWR_TIMER2 | PWR_UART1 | PWR_UART2 |
                           PWR_UART3);
 
-    detachPinChangeInterrupt(digitalPinToPinChangeInterrupt(ENCODER_DT));
-    detachPinChangeInterrupt(digitalPinToPinChangeInterrupt(START_BTN));
-    detachPinChangeInterrupt(digitalPinToPinChangeInterrupt(RESET_BTN));
+    detachPinChangeInterrupt(digitalPinToPinChangeInterrupt(ENCODER_DT_PIN));
+    detachPinChangeInterrupt(digitalPinToPinChangeInterrupt(START_BTN_PIN));
+    detachPinChangeInterrupt(digitalPinToPinChangeInterrupt(RESET_BTN_PIN));
 
     updateTurnOffTime();
 }
