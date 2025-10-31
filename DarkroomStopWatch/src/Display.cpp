@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+#include "Tools.h"
+
 constexpr uint16_t kBlinkTime = MS_IN_SEC / 2;
 
 constexpr uint8_t kSegCharMap[] = {
@@ -93,7 +95,7 @@ void Display::update() {
 }
 
 void Display::tick() {
-    uint32_t ms = millis();
+    uint32_t ms = gMillis();
     if ((m_blinkMin || m_blinkSec || m_blinkDots) && m_blinkTimer < ms) {
         m_blinkState = !m_blinkState;
         m_blinkTimer = ms + kBlinkTime;
@@ -106,7 +108,7 @@ void Display::blinkMin(bool initState) {
     m_blinkSec = false;
     m_blinkMin = true;
     m_blinkState = initState;
-    m_blinkTimer = millis() + kBlinkTime;
+    m_blinkTimer = gMillis() + kBlinkTime;
     update();
 }
 
@@ -115,7 +117,7 @@ void Display::blinkSec(bool initState) {
     m_blinkMin = false;
     m_blinkSec = true;
     m_blinkState = initState;
-    m_blinkTimer = millis() + kBlinkTime;
+    m_blinkTimer = gMillis() + kBlinkTime;
     update();
 }
 
@@ -124,7 +126,7 @@ void Display::blinkDots(bool initState) {
     m_blinkSec = false;
     m_blinkDots = true;
     m_blinkState = initState;
-    m_blinkTimer = millis() + kBlinkTime;
+    m_blinkTimer = gMillis() + kBlinkTime;
     update();
 }
 

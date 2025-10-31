@@ -44,7 +44,7 @@ void changeMode(Mode mode) {
     case Mode::runTime:
         gHardware.effectiveMode(false);
         gBeeper.play(Beeper::Beep);
-        gStopTime = millis() + (gRunningMin * 60L + gRunningSec) * MS_IN_SEC;
+        gStopTime = gMillis() + (gRunningMin * 60L + gRunningSec) * MS_IN_SEC;
         gLongAlarm = gRunningMin >= 20 || gSettings.longNotify;
         gNextNotifyTime = 0;
         if (gRunningMin > 3 && gRunningMin < 20 && gSettings.eachMinuteNotify) {
@@ -61,12 +61,12 @@ void changeMode(Mode mode) {
     case Mode::stopwatch:
         gHardware.effectiveMode(false);
         gBeeper.play(Beeper::Beep);
-        gStartTime = millis() - gPrevPassedTime;
+        gStartTime = gMillis() - gPrevPassedTime;
         gPrevPassedTime = 0;
         gDisplay.resetBlink();
         break;
     case Mode::stopwatchPause:
-        gPrevPassedTime = millis() - gStartTime;
+        gPrevPassedTime = gMillis() - gStartTime;
         gHardware.effectiveMode(true);
         gBeeper.play(Beeper::Beep);
         gDisplay.blinkDots(false);
@@ -106,7 +106,7 @@ void loop() {
         return;
     }
 
-    auto curTime = millis();
+    auto curTime = gMillis();
     auto runningTime = gRunningMin * 60L + gRunningSec;
 
     if (gMode != Mode::settings && gHardware.resetHold()) {

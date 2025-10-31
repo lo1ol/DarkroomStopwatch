@@ -58,7 +58,7 @@ void Hardware::tick() {
     }
 
     // if nothing is pressed and we still ignore btns
-    if (m_ignoreBtns && millis() - m_sleepTime > 100 && !m_resetBtn.busy() && !m_startBtn.busy()) {
+    if (m_ignoreBtns && gMillis() - m_sleepTime > 100 && !m_resetBtn.busy() && !m_startBtn.busy()) {
         // stop ignore them
         m_ignoreBtns = false;
     }
@@ -82,7 +82,7 @@ void Hardware::tick() {
         return;
     }
 
-    if (m_allowSleep && millis() > m_sleepTime) {
+    if (m_allowSleep && gMillis() > m_sleepTime) {
         sleep();
     }
 }
@@ -115,7 +115,7 @@ void Hardware::sleep() {
 }
 
 int8_t Hardware::getEncoderDir() {
-    if (!gEncoder.turn() || (m_ignoreBtns && millis() - m_sleepTime < 100))
+    if (!gEncoder.turn() || (m_ignoreBtns && gMillis() - m_sleepTime < 100))
         return 0;
 
     return gEncoder.dir();
@@ -197,7 +197,7 @@ void Hardware::enableHardware() {
 }
 
 void Hardware::updateTurnOffTime() {
-    m_sleepTime = AUTOSLEEP_TIME_SEC * MS_IN_SEC + millis();
+    m_sleepTime = AUTOSLEEP_TIME_SEC * MS_IN_SEC + gMillis();
 }
 
 void Hardware::effectiveMode(bool effective) {

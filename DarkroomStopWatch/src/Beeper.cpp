@@ -18,7 +18,7 @@ void Beeper::play(Style style) {
     m_play = true;
     m_style = style;
     m_melodyPhase = 0;
-    m_timer = millis() + (style == LongAlarm ? 500 : 50);
+    m_timer = gMillis() + (style == LongAlarm ? 500 : 50);
     analogWrite(BEEPER, BUZZER_VOLUME);
 }
 
@@ -26,7 +26,7 @@ void Beeper::tick() {
     if (!m_play)
         return;
 
-    uint32_t currentTime = millis();
+    uint32_t currentTime = gMillis();
 
     switch (m_style) {
     case Beep:

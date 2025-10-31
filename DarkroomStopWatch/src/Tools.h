@@ -7,8 +7,7 @@
 #include "Hardware.h"
 #include "Settings.h"
 
-// https://github.com/GyverLibs/GyverPower/blob/main/examples/lowClockTimeCorrect/lowClockTimeCorrect.ino
-#define millis() (millis() << (CLKPR & 0xF))
+uint32_t gMillis();
 
 #define ADD_TO_ENUM(enumName, current, num) \
     (enumName)(((uint8_t)(current) + (uint8_t)enumName::last_ + num) % (uint8_t)enumName::last_)
