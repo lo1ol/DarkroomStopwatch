@@ -71,6 +71,11 @@ If you want to modify this code, then I recomment to use PlatfromIO:
 pio run -t upload
 ```
 
+## Frequent problems
+
+*Problem:* Time goes 2 times faster/slower
+*Answer:* Check processor at Arduino IDE. You probably uploaded 16MHz to 8MHz Arduino or vise versa.
+
 ## Support
 
 If you have any questions, problems or suggestions, you are welcome to write me:)
